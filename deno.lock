@@ -12,12 +12,14 @@
     "packageJson": {
       "dependencies": [
         "npm:@tailwindcss/postcss@^4.3.2",
+        "npm:@types/leaflet@^1.9.21",
         "npm:@types/node@^24.13.2",
         "npm:@types/uuid@9",
         "npm:@vitejs/plugin-vue@^6.0.7",
         "npm:@vue/tsconfig@~0.9.1",
         "npm:autoprefixer@^10.5.3",
         "npm:axios@^1.6.0",
+        "npm:leaflet@^1.9.4",
         "npm:postcss@^8.5.19",
         "npm:tailwindcss@^4.3.2",
         "npm:typescript@~6.0.2",
