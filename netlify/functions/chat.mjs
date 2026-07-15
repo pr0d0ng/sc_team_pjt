@@ -43,7 +43,8 @@ export async function handler(event) {
   }
 
   const messages = Array.isArray(payload.messages) ? payload.messages : []
-  const model = payload.model || 'gpt-4o-mini'
+  const defaultModel = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+  const model = payload.model || defaultModel
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

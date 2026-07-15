@@ -23,7 +23,11 @@ const isOpen = ref(false)
 const isMobile = ref(false)
 const chatBody = ref<HTMLElement | null>(null)
 
-const chatEndpoint = (import.meta.env.VITE_CHAT_API_URL as string | undefined) || '/.netlify/functions/chat'
+const chatEndpoint =
+  (import.meta.env.VITE_CHAT_API_URL as string | undefined) || '/.netlify/functions/chat'
+
+const defaultModel =
+  (import.meta.env.VITE_CHAT_MODEL as string | undefined) || 'gpt-4o-mini'
 
 function loadMessages(): Message[] {
   if (typeof window === 'undefined') {
@@ -90,7 +94,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         messages: nextMessages,
-        model: 'gpt-4o-mini'
+        model: defaultModel
       })
     })
 
