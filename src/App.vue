@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted, defineAsyncComponent, provide } from 'vue'
+import { ref, onMounted, defineAsyncComponent, provide} from 'vue'
+import ChatWidget from './components/ChatWidget.vue'
+
 import { useAttractions } from './composables/useAttractions'
 import { useReviews } from './composables/useReviews'
 import { useBookmarks } from './composables/useBookmarks'
 import { useComments } from './composables/useComments'
 import { useFestivals } from './composables/useFestivals'
 import { useMatching } from './composables/useMatching'
+import { useUserProfile } from './composables/useUserProfile'
 
-// 초기화
+// initialization of data stores
 const { initializeAttractions } = useAttractions()
 const { loadReviews } = useReviews()
 const { loadBookmarks } = useBookmarks()
 const { loadComments } = useComments()
 const { loadFestivals } = useFestivals()
 const { loadMatchingPosts } = useMatching()
+const { loadUserProfile } = useUserProfile()
 
 onMounted(() => {
   initializeAttractions()
@@ -22,9 +26,10 @@ onMounted(() => {
   loadComments()
   loadFestivals()
   loadMatchingPosts()
+  loadUserProfile()
 })
 
-// lazy components
+// Lazy / safe component imports (fallback to HelloWorld if missing)
 const Home = defineAsyncComponent(() => import('./components/HelloWorld.vue'))
 const Bookmarks = defineAsyncComponent(() => import('./components/BookmarkPanel.vue'))
 const Profile = defineAsyncComponent(() => import('./components/ProfilePage.vue').catch(() => import('./components/HelloWorld.vue')))
@@ -93,53 +98,77 @@ provide('focusAttraction', focusAttraction)
 </script>
 
 <template>
-  <div class="app">
+  <div id="app" class="app-shell">
     <nav class="navbar">
-      <div class="navbar-brand">
-        <h1 @click="go('home')">🌍 서울 관광 커뮤니티</h1>
+      <div class="navbar-left" @click="go('home')" role="button" aria-label="홈으로">
+        <h1 class="brand">🌍 서울 여행 커뮤니티</h1>
       </div>
 
-      <div class="navbar-menu">
-        <button :class="['nav-btn', { active: currentPage === 'home' }]" @click="go('home')">🏠 홈</button>
-        <button :class="['nav-btn', { active: currentPage === 'bookmarks' }]" @click="go('bookmarks')">♥ 찜한 것</button>
-        <button :class="['nav-btn', { active: currentPage === 'profile' }]" @click="go('profile')">👤 프로필</button>
-
-        <button :class="['nav-btn', { active: currentPage === 'community' }]" @click="go('community')">💬 커뮤니티</button>
-        <button :class="['nav-btn', { active: currentPage === 'matching' }]" @click="go('matching')">🧑‍🤝‍🧑 매칭</button>
-        <button :class="['nav-btn', { active: currentPage === 'map' }]" @click="go('map')">🗺️ 지도</button>
-        <button :class="['nav-btn', { active: currentPage === 'calendar' }]" @click="go('calendar')">🎉 축제</button>
-      </div>
+      <ul class="nav-tabs" role="tablist">
+        <li :class="['tab', { active: currentPage === 'home' }]" @click="go('home')">🏠 홈</li>
+        <li :class="['tab', { active: currentPage === 'bookmarks' }]" @click="go('bookmarks')">♥ 찜</li>
+        <li :class="['tab', { active: currentPage === 'profile' }]" @click="go('profile')">👤 프로필</li>
+        <li :class="['tab', { active: currentPage === 'community' }]" @click="go('community')">💬 커뮤니티</li>
+        <li :class="['tab', { active: currentPage === 'matching' }]" @click="go('matching')">🧑‍🤝‍🧑 매칭</li>
+        <li :class="['tab', { active: currentPage === 'map' }]" @click="go('map')">🗺️ 지도</li>
+        <li :class="['tab', { active: currentPage === 'calendar' }]" @click="go('calendar')">🎉 축제</li>
+      </ul>
     </nav>
 
     <main class="main-content">
       <component :is="currentComponent()" />
     </main>
+
+    <ChatWidget />
   </div>
 </template>
 
-<style>
+<style scoped>
+* { box-sizing: border-box; }
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; background: #f5f7fb; color: #1f2937; }
+
+/* Navbar */
 .navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 10px 24px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
-.navbar-brand h1 { cursor:pointer; margin:0; font-size:18px }
-.navbar-menu { display:flex; gap:8px; }
-.nav-btn {
-  padding:8px 12px;
-  background: rgba(255,255,255,0.14);
-  border-radius:8px;
-  color:white;
-  border:none;
-  cursor:pointer;
-  font-weight:600;
+.brand { margin: 0; font-size: 18px; cursor: pointer; user-select: none; }
+.nav-tabs { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; align-items: center; }
+.tab {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
 }
-.nav-btn.active {
-  background:white;
-  color:#667eea;
+.tab:hover { transform: translateY(-1px); background: rgba(255,255,255,0.18); }
+.tab.active { background: #fff; color: #667eea; box-shadow: 0 6px 18px rgba(102,126,234,0.12); }
+
+/* Main */
+.main-content {
+  width: 100%;
+  max-width: 1300px;
+  margin: 24px auto;
+  padding: 16px;
+  flex: 1 1 auto;
+  box-sizing: border-box;
 }
-.main-content { padding:20px; min-height:calc(100vh - 64px) }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nav-tabs { gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .brand { font-size: 16px; }
+  .main-content { margin: 16px; padding: 12px; }
+}
 </style>
