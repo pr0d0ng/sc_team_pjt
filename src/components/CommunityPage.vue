@@ -9,7 +9,7 @@
       <button
         v-for="tab in boardTabs"
         :key="tab.id"
-        @click="selectedBoard = tab.id"
+        @click="selectBoard(tab.id)"
         :class="['tab-btn', { active: selectedBoard === tab.id }]"
       >
         {{ tab.label }}
@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject, watch } from 'vue'
 import { usePosts } from '../composables/usePosts'
 import type { Post } from '../types/tourism'
 import PostList from './PostList.vue'
@@ -56,9 +56,31 @@ import PostForm from './PostForm.vue'
 
 const { posts, loadPosts, createPost, deletePost: deletePostFn } = usePosts()
 
+// 상태 선언 (선언 순서 중요)
 const selectedBoard = ref<'free' | 'attraction'>('free')
 const showPostForm = ref(false)
 const selectedPost = ref<Post | null>(null)
+
+// 탭 선택: 게시물 상세/작성 모드면 목록으로 되돌리기 위해 상태 초기화
+const selectBoard = (boardId: 'free' | 'attraction') => {
+  selectedBoard.value = boardId
+  selectedPost.value = null
+  showPostForm.value = false
+}
+
+// 외부에서 커뮤니티 열기 파라미터(선택적)
+const communityOpenParams = inject<{ value: any }>('communityOpenParams', null)
+watch(() => communityOpenParams?.value, (val) => {
+  if (!val) return
+  selectedBoard.value = val.board || 'free'
+  selectedPost.value = null
+  showPostForm.value = !!val.openForm
+  if (val.postId) {
+    const p = posts.value.find(p => p.id === val.postId)
+    if (p) selectedPost.value = p
+  }
+  if (communityOpenParams) communityOpenParams.value = null
+})
 
 const boardTabs = [
   { id: 'free' as const, label: '💬 자유 게시판' },

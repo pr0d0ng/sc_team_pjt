@@ -85,9 +85,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useAttractions } from '../composables/useAttractions'
 import type { Attraction } from '../types/tourism'
+
+// App.vue에서 전달된 포커스 ref 주입
+const mapFocusContentId = inject<{ value: string | null }>('mapFocusContentId', null)
+
+// watch로 포커스 변경 감지
+watch(
+  () => mapFocusContentId?.value,
+  (val) => {
+    if (!val) return
+    // allAttractions에서 contentid로 찾기 (contentid 타입에 따라 문자열/숫자 변환)
+    const found = allAttractions.value.find(a => String(a.contentid) === String(val))
+    if (found) {
+      selectAttraction(found)
+      // 전달된 값 초기화해서 재호출 허용
+      if (mapFocusContentId) mapFocusContentId.value = null
+    } else {
+      // 없으면 검색어로 사용(타이틀 매칭) 시도
+      const byTitle = allAttractions.value.find(a => a.title && a.title.includes(String(val)))
+      if (byTitle) {
+        selectAttraction(byTitle)
+        if (mapFocusContentId) mapFocusContentId.value = null
+      }
+    }
+  }
+)
 
 const { allAttractions } = useAttractions()
 
