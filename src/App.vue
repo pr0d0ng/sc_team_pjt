@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, defineAsyncComponent, provide} from 'vue'
+import { ref, onMounted, defineAsyncComponent, provide } from 'vue'
 import ChatWidget from './components/ChatWidget.vue'
 
 import { useAttractions } from './composables/useAttractions'
@@ -10,7 +10,6 @@ import { useFestivals } from './composables/useFestivals'
 import { useMatching } from './composables/useMatching'
 import { useUserProfile } from './composables/useUserProfile'
 
-// initialization of data stores
 const { initializeAttractions } = useAttractions()
 const { loadReviews } = useReviews()
 const { loadBookmarks } = useBookmarks()
@@ -19,8 +18,9 @@ const { loadFestivals } = useFestivals()
 const { loadMatchingPosts } = useMatching()
 const { loadUserProfile } = useUserProfile()
 
-onMounted(() => {
-  initializeAttractions()
+onMounted(async () => {
+  // 관광지 데이터를 먼저 로드(비동기 완료 대기)해야 리뷰 마이그레이션 등 동기화가 잘 됨
+  await initializeAttractions()
   loadReviews()
   loadBookmarks()
   loadComments()
