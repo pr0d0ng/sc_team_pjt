@@ -11,17 +11,8 @@ const mapEl = ref<HTMLDivElement | null>(null)
 let map: L.Map | null = null
 let marker: L.Marker | null = null
 
-onMounted(() => {
-  if (!mapEl.value) return
-  map = L.map(mapEl.value).setView([37.5665, 126.9780], 12)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map)
-})
-
-watch(() => props.selectedLocation, (loc) => {
+function setMarkerAndFly(loc: { lat: number; lng: number }) {
   if (!map) return
-  if (!loc) return
   const latlng = L.latLng(loc.lat, loc.lng)
   if (!marker) {
     marker = L.marker(latlng).addTo(map)
@@ -29,7 +20,30 @@ watch(() => props.selectedLocation, (loc) => {
     marker.setLatLng(latlng)
   }
   map.flyTo(latlng, 15, { duration: 0.6 })
+}
+
+onMounted(() => {
+  if (!mapEl.value) return
+  map = L.map(mapEl.value).setView([37.5665, 126.9780], 12)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map)
+
+  // If location was already set before the map mounted, create marker now
+  if (props.selectedLocation && props.selectedLocation.lat && props.selectedLocation.lng) {
+    setMarkerAndFly(props.selectedLocation)
+  }
 })
+
+// watch selectedLocation and handle changes
+watch(
+  () => props.selectedLocation,
+  (loc) => {
+    if (!loc) return
+    setMarkerAndFly(loc)
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
@@ -37,21 +51,18 @@ watch(() => props.selectedLocation, (loc) => {
   width: 100%;
   height: 100%;
   position: relative;
-  z-index: 0; /* ensure the map base is at baseline */
+  z-index: 0;
 }
 
-/* Lower Leaflet panes/containers so header/UI stays above the map */
 .leaflet-container {
   position: relative !important;
   z-index: 0 !important;
 }
 
-/* Keep map controls just above the map but still below typical header z-index */
 .leaflet-control {
   z-index: 1 !important;
 }
 
-/* Other panes (markers/popups/overlays) set low so header can overlay */
 .leaflet-pane,
 .leaflet-overlay-pane,
 .leaflet-shadow-pane,
