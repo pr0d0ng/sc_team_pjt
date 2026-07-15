@@ -9,13 +9,21 @@ const loadUserProfile = () => {
   const saved = localStorage.getItem(storageKey)
   if (saved) {
     currentUser.value = JSON.parse(saved)
+    // review-user-id도 동기화
+    if (currentUser.value?.id) {
+      localStorage.setItem('review-user-id', currentUser.value.id)
+    }
   }
 }
 
 // 사용자 생성/저장
 const createUserProfile = (name: string, email: string) => {
+  // 기존에 생성된 review-user-id가 있으면 그 값을 id로 재사용해 일관성 유지
+  const existingReviewId = localStorage.getItem('review-user-id')
+  const id = existingReviewId || `user-${Date.now()}`
+
   currentUser.value = {
-    id: `user-${Date.now()}`,
+    id,
     name,
     email,
     createdAt: new Date().toISOString(),
@@ -25,6 +33,8 @@ const createUserProfile = (name: string, email: string) => {
     role: 'user'
   }
   localStorage.setItem(storageKey, JSON.stringify(currentUser.value))
+  // review-user-id에 현재 사용자 id 저장 (통일)
+  localStorage.setItem('review-user-id', currentUser.value.id)
   return currentUser.value
 }
 
@@ -36,6 +46,9 @@ const updateUserProfile = (updates: Partial<UserProfile>) => {
       ...updates
     }
     localStorage.setItem(storageKey, JSON.stringify(currentUser.value))
+    if (currentUser.value.id) {
+      localStorage.setItem('review-user-id', currentUser.value.id)
+    }
   }
 }
 
@@ -48,6 +61,7 @@ const isUserLoggedIn = () => {
 const logout = () => {
   currentUser.value = null
   localStorage.removeItem(storageKey)
+  // review-user-id는 유지하지 않음(필요하면 여기서도 제거하세요)
 }
 
 export const useUserProfile = () => ({

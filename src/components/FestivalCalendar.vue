@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
 import { useFestivals } from '../composables/useFestivals'
 
 const { festivals, loadFestivals } = useFestivals()
+
+const focusAttraction = inject<(contentid: string) => void>('focusAttraction', () => {})
 
 const today = new Date()
 const year = ref<number>(today.getFullYear())
@@ -53,7 +55,6 @@ const selectedDay = ref<number | null>(null)
 const selectedFestivals = computed(() => selectedDay.value == null ? [] : festivalsOn(selectedDay.value))
 function selectDay(d: number | null) { selectedDay.value = d }
 
-// modal
 const showProgramModal = ref(false)
 const modalFestival = ref<any>(null)
 function openProgramModal(f: any) {
@@ -140,7 +141,7 @@ function closeProgramModal() {
 
               <div class="mt-3 flex gap-2 flex-wrap">
                 <button @click="openProgramModal(f)" class="action-btn">상세보기</button>
-                <button @click="$emit('focus-attraction', f.contentid)" class="action-btn">지도에서 보기</button>
+                <button @click="focusAttraction && focusAttraction(f.contentid)" class="action-btn">지도에서 보기</button>
                 <a :href="f.firstimage || '#'" target="_blank" v-if="f.firstimage" class="action-btn link-btn">사진 보기</a>
               </div>
             </div>

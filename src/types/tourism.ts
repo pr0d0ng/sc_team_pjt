@@ -19,12 +19,15 @@ export interface Review {
   contentid: string
   userId: string
   userName: string
-  rating: number // 1-5
+  rating: number
   title: string
   content: string
   createdAt: string
   updatedAt: string
   likes: number
+  attractionTitle?: string
+  attractionAddress?: string
+  attractionCategory?: string
 }
 
 // 댓글

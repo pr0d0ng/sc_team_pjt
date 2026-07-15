@@ -33,7 +33,7 @@
           <h3>{{ attraction.title }}</h3>
           <p class="address">📍 {{ attraction.addr1 }}</p>
           <p class="reviews-count">{{ getReviewCount(attraction.contentid) }}개 리뷰</p>
-          <button class="view-btn" @click.stop="selectAttraction(attraction)">상세보기</button>
+          <button class="view-btn" @click.stop="handleReviewClick(attraction)">리뷰보기</button>
         </div>
       </div>
     </div>
@@ -51,6 +51,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [attraction: Attraction, coords?: { lat: number; lng: number }]
+  'open-reviews': [attraction: Attraction]
 }>()
 
 const { getReviewsByAttraction, getAverageRating } = useReviews()
@@ -60,6 +61,11 @@ const selectAttraction = (attraction: Attraction) => {
   const lat = parseFloat(String(attraction.mapy || '')) || 0
   const lng = parseFloat(String(attraction.mapx || '')) || 0
   emit('select', attraction, { lat, lng })
+}
+
+const handleReviewClick = (attraction: Attraction) => {
+  selectAttraction(attraction)
+  emit('open-reviews', attraction)
 }
 
 const getReviewCount = (contentid: string) => {
@@ -197,7 +203,11 @@ const getReviewCount = (contentid: string) => {
   width: 100%;
   padding: 10px;
   background: #667eea;
-  color: white;
+  color: #ffffff;
+  position: relative;
+  z-index: 20;
+  font-size: 13px;
+  white-space: nowrap;
   border: none;
   border-radius: 6px;
   cursor: pointer;

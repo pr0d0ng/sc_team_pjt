@@ -3,50 +3,38 @@ import { onMounted, ref, computed, inject } from 'vue'
 import { useBookmarks } from '../composables/useBookmarks'
 import { useReviews } from '../composables/useReviews'
 import { usePosts } from '../composables/usePosts'
+import { useUserProfile } from '../composables/useUserProfile'
 
-// Composables 로드
 const { bookmarks, loadBookmarks } = useBookmarks()
-const { reviews, loadReviews } = useReviews()
+const { reviews, loadReviews, updateReview, deleteReview } = useReviews()
 const { posts, loadPosts } = usePosts()
+const { currentUser, loadUserProfile } = useUserProfile()
 
-// App.vue에서 주입된 viewPost 함수
 const viewPost = inject<(postId: string) => void>('viewPost', () => {})
 
-// 사용자 이름 관리
 const userName = ref('익명 유저')
 const isEditingName = ref(false)
 const newUserName = ref('')
 const userNameStorageKey = 'user-profile-name'
-
-// 현재 활성 탭
 const activeTab = ref<'posts' | 'bookmarks' | 'reviews'>('posts')
 
-// 내가 작성한 게시물 (평문 비밀번호는 보이지 않도록)
 const myPosts = computed(() => {
   return posts.value.filter(p => p.boardType === 'free').map(p => ({
     ...p,
-    password: '***' // 비밀번호 숨김
+    password: '***'
   }))
 })
 
-// 나의 리뷰
-const myReviews = computed(() => {
-  return reviews.value
-})
+const myReviews = computed(() => reviews.value.slice().reverse())
 
-// 찜한 장소
-const myBookmarks = computed(() => {
-  return bookmarks.value
-})
+const myBookmarks = computed(() => bookmarks.value.slice().reverse())
 
-// 통계
 const stats = computed(() => ({
   posts: myPosts.value.length,
   bookmarks: myBookmarks.value.length,
   reviews: myReviews.value.length
 }))
 
-// 사용자 이름 로드
 const loadUserName = () => {
   const saved = localStorage.getItem(userNameStorageKey)
   if (saved) {
@@ -54,24 +42,20 @@ const loadUserName = () => {
   }
 }
 
-// 사용자 이름 저장
 const saveUserName = () => {
   localStorage.setItem(userNameStorageKey, userName.value)
 }
 
-// 이름 수정 시작
 const startEditName = () => {
   newUserName.value = userName.value
   isEditingName.value = true
 }
 
-// 이름 수정 취소
 const cancelEditName = () => {
   isEditingName.value = false
   newUserName.value = ''
 }
 
-// 이름 수정 완료
 const saveName = () => {
   if (newUserName.value.trim()) {
     userName.value = newUserName.value.trim()
@@ -81,8 +65,94 @@ const saveName = () => {
   }
 }
 
+const getCategoryLabel = (contenttypeid?: string) => {
+  const map: Record<string, string> = {
+    '12': '관광지',
+    '14': '문화시설',
+    '28': '레포츠',
+    '32': '숙박',
+    '38': '쇼핑',
+    '25': '여행코스'
+  }
+  return map[contenttypeid || ''] || '미분류'
+}
+
+const getBookmarkAddress = (bookmark: any) => {
+  return bookmark?.attractionData?.addr1 || bookmark?.attractionData?.addr2 || '주소 정보 없음'
+}
+
+const currentUserId = ref('')
+const loadCurrentUserId = () => {
+  const saved = localStorage.getItem('review-user-id')
+  if (saved) {
+    currentUserId.value = saved
+  } else {
+    const generated = `review-user-${Date.now()}`
+    currentUserId.value = generated
+    localStorage.setItem('review-user-id', generated)
+  }
+}
+
+const isMyReview = (review: any) => {
+  const myId = currentUser.value?.id || currentUserId.value
+  return review.userId === myId
+}
+
+const editingReviewId = ref<string | null>(null)
+const editingReviewTitle = ref('')
+const editingReviewContent = ref('')
+const editingReviewRating = ref(5)
+
+const showReviewDeleteConfirm = ref(false)
+const reviewDeleteTargetId = ref<string | null>(null)
+
+const startEditReview = (review: any) => {
+  editingReviewId.value = review.id
+  editingReviewTitle.value = review.title
+  editingReviewContent.value = review.content
+  editingReviewRating.value = review.rating
+}
+
+const cancelEditReview = () => {
+  editingReviewId.value = null
+  editingReviewTitle.value = ''
+  editingReviewContent.value = ''
+  editingReviewRating.value = 5
+}
+
+const saveReviewEdit = (id: string) => {
+  if (!editingReviewTitle.value.trim() || !editingReviewContent.value.trim()) {
+    alert('제목과 내용을 입력하세요.')
+    return
+  }
+  updateReview(id, {
+    title: editingReviewTitle.value.trim(),
+    content: editingReviewContent.value.trim(),
+    rating: editingReviewRating.value
+  })
+  cancelEditReview()
+}
+
+const confirmDeleteReview = (id: string) => {
+  reviewDeleteTargetId.value = id
+  showReviewDeleteConfirm.value = true
+}
+
+const cancelDeleteReview = () => {
+  showReviewDeleteConfirm.value = false
+  reviewDeleteTargetId.value = null
+}
+
+const deleteSelectedReview = () => {
+  if (!reviewDeleteTargetId.value) return
+  deleteReview(reviewDeleteTargetId.value)
+  cancelDeleteReview()
+}
+
 onMounted(() => {
   loadUserName()
+  loadCurrentUserId()
+  loadUserProfile()
   loadPosts()
   loadBookmarks()
   loadReviews()
@@ -100,7 +170,6 @@ const formatDate = (date: string) => {
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
     <div class="mx-auto max-w-4xl">
-      <!-- 프로필 헤더 -->
       <div class="mb-8 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white shadow-lg">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
@@ -119,7 +188,6 @@ const formatDate = (date: string) => {
         </div>
       </div>
 
-      <!-- 이름 수정 모달 -->
       <div
         v-if="isEditingName"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
@@ -150,7 +218,6 @@ const formatDate = (date: string) => {
         </div>
       </div>
 
-      <!-- 통계 카드 -->
       <div class="mb-8 grid grid-cols-3 gap-4">
         <div class="rounded-lg bg-white p-6 shadow-md">
           <div class="text-center">
@@ -172,7 +239,6 @@ const formatDate = (date: string) => {
         </div>
       </div>
 
-      <!-- 탭 네비게이션 -->
       <div class="mb-6 flex gap-4 border-b border-gray-200">
         <button
           @click="activeTab = 'posts'"
@@ -209,16 +275,14 @@ const formatDate = (date: string) => {
         </button>
       </div>
 
-      <!-- 콘텐츠 영역 -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <!-- 작성한 게시물 탭 -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
         <div v-show="activeTab === 'posts'">
           <div v-if="myPosts.length > 0" class="space-y-4">
             <button
               v-for="post in myPosts"
               :key="post.id"
               @click="viewPost(post.id)"
-              class="w-full text-left rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all hover:bg-gray-50 cursor-pointer"
+              class="w-full cursor-pointer text-left rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:shadow-md"
             >
               <div class="mb-2 flex items-start justify-between">
                 <div>
@@ -229,7 +293,7 @@ const formatDate = (date: string) => {
                   {{ post.boardType === 'free' ? '자유' : '추천' }}
                 </span>
               </div>
-              <p class="text-gray-700 line-clamp-2">{{ post.content }}</p>
+              <p class="line-clamp-2 text-gray-700">{{ post.content }}</p>
               <div class="mt-3 flex gap-4 text-xs text-gray-500">
                 <span>👁️ {{ post.views }}</span>
                 <span>❤️ {{ post.likes }}</span>
@@ -237,54 +301,52 @@ const formatDate = (date: string) => {
               </div>
             </button>
           </div>
-          <div v-else class="text-center py-8">
-            <p class="text-gray-500 text-lg">아직 작성한 게시물이 없습니다.</p>
+          <div v-else class="py-8 text-center">
+            <p class="text-lg text-gray-500">아직 작성한 게시물이 없습니다.</p>
           </div>
         </div>
 
-
-        <!-- 찜한 장소 탭 -->
         <div v-show="activeTab === 'bookmarks'">
           <div v-if="myBookmarks.length > 0" class="space-y-4">
             <div
               v-for="bookmark in myBookmarks"
               :key="bookmark.contentid"
-              class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+              class="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
             >
               <div class="mb-2 flex items-start justify-between">
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">{{ bookmark.title }}</h3>
-                  <p class="mt-1 text-sm text-gray-600">
-                    {{ bookmark.attractionData?.address || '주소 정보 없음' }}
-                  </p>
+                  <p class="mt-1 text-sm text-gray-600">{{ getBookmarkAddress(bookmark) }}</p>
                 </div>
                 <span class="text-2xl">♥️</span>
               </div>
-              <p class="text-gray-700 text-sm">
-                카테고리: {{ bookmark.attractionData?.category || '미분류' }}
-              </p>
+              <p class="text-sm text-gray-700">카테고리: {{ getCategoryLabel(bookmark.attractionData?.contenttypeid) }}</p>
               <div class="mt-3 text-xs text-gray-500">
                 <span>{{ formatDate(bookmark.bookmarkedAt) }}에 찜함</span>
               </div>
             </div>
           </div>
-          <div v-else class="text-center py-8">
-            <p class="text-gray-500 text-lg">아직 찜한 장소가 없습니다.</p>
+          <div v-else class="py-8 text-center">
+            <p class="text-lg text-gray-500">아직 찜한 장소가 없습니다.</p>
           </div>
         </div>
 
-        <!-- 작성한 리뷰 탭 -->
         <div v-show="activeTab === 'reviews'">
           <div v-if="myReviews.length > 0" class="space-y-4">
             <div
               v-for="review in myReviews"
               :key="review.id"
-              class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+              class="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
             >
-              <div class="mb-2 flex items-start justify-between">
+              <div class="mb-2 flex items-start justify-between gap-2">
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900">{{ review.title }}</h3>
-                  <p class="mt-1 text-sm text-gray-600">{{ review.userName }}</p>
+                  <p class="mt-1 text-sm text-gray-600">
+                    {{ review.attractionTitle || '장소 정보 없음' }}
+                  </p>
+                  <p class="mt-1 text-xs text-gray-500">
+                    {{ review.attractionAddress || '주소 정보 없음' }}
+                  </p>
                 </div>
                 <div class="flex gap-1">
                   <span v-for="i in 5" :key="i" class="text-lg">
@@ -292,18 +354,54 @@ const formatDate = (date: string) => {
                   </span>
                 </div>
               </div>
-              <p class="text-gray-700 line-clamp-2">{{ review.content }}</p>
-              <div class="mt-3 flex gap-4 text-xs text-gray-500">
-                <span>👍 {{ review.likes }}</span>
-                <span>{{ formatDate(review.createdAt) }}</span>
+
+              <div v-if="editingReviewId === review.id" class="mt-3 rounded-lg bg-gray-50 p-3">
+                <input v-model="editingReviewTitle" class="mb-2 w-full rounded border border-gray-300 px-3 py-2" placeholder="제목" />
+                <div class="mb-2 flex gap-1">
+                  <button
+                    v-for="i in 5"
+                    :key="i"
+                    type="button"
+                    :class="['text-xl', i <= editingReviewRating ? 'text-amber-500' : 'text-gray-300']"
+                    @click="editingReviewRating = i"
+                  >★</button>
+                </div>
+                <textarea v-model="editingReviewContent" class="mb-2 w-full rounded border border-gray-300 px-3 py-2" rows="3" placeholder="리뷰 내용"></textarea>
+                <div class="flex gap-2">
+                  <button @click="saveReviewEdit(review.id)" class="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white">저장</button>
+                  <button @click="cancelEditReview" class="rounded bg-gray-300 px-3 py-2 text-sm font-semibold text-gray-800">취소</button>
+                </div>
+              </div>
+
+              <div v-else>
+                <p class="line-clamp-2 text-gray-700">{{ review.content }}</p>
+                <div class="mt-3 flex flex-wrap gap-4 text-xs text-gray-500">
+                  <span>👍 {{ review.likes }}</span>
+                  <span>{{ formatDate(review.createdAt) }}</span>
+                  <span v-if="isMyReview(review)">
+                    <button class="font-semibold text-blue-600" @click="startEditReview(review)">수정</button>
+                    <button class="ml-2 font-semibold text-rose-600" @click="confirmDeleteReview(review.id)">삭제</button>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-          <div v-else class="text-center py-8">
-            <p class="text-gray-500 text-lg">아직 작성한 리뷰가 없습니다.</p>
+          <div v-else class="py-8 text-center">
+            <p class="text-lg text-gray-500">아직 작성한 리뷰가 없습니다.</p>
           </div>
         </div>
       </div>
     </div>
+
+    <div v-if="showReviewDeleteConfirm" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50" @click.self="cancelDeleteReview">
+      <div class="w-full max-w-sm rounded-lg bg-white p-6 shadow-xl" @click.stop>
+        <h3 class="mb-2 text-xl font-bold text-gray-900">리뷰 삭제</h3>
+        <p class="mb-4 text-gray-600">이 리뷰를 정말 삭제하시겠습니까?</p>
+        <div class="flex gap-2">
+          <button @click="deleteSelectedReview" class="flex-1 rounded bg-rose-600 px-4 py-2 font-semibold text-white">삭제</button>
+          <button @click="cancelDeleteReview" class="flex-1 rounded bg-gray-300 px-4 py-2 font-semibold text-gray-800">취소</button>
+        </div>
+      </div>
+    </div>
   </div>
-</template> 
+</template>

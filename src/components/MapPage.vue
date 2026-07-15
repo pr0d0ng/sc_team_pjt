@@ -1,5 +1,11 @@
 <template>
   <div>
+    <ReviewsModal
+      v-if="showReviews"
+      :contentid="currentContentIdForReviews"
+      :title="currentAttractionTitle"
+      @close="showReviews=false"
+    />
     <div class="controls">
       <input
         v-model="query"
@@ -26,26 +32,40 @@
         <LeafletMap :selectedLocation="selectedLocation" />
       </div>
       <div class="list-area">
-        <AttractionsList :attractions="items" @select="onSelect" />
+        <AttractionsList :attractions="items" @select="onSelect" @open-reviews="openReviews" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject, watch, type Ref } from 'vue'
 import LeafletMap from './LeafletMap.vue'
 import AttractionsList from './AttractionsList.vue'
 import { useAttractions } from '../composables/useAttractions'
 import type { Attraction } from '../types/tourism'
+import ReviewsModal from './ReviewsModal.vue'
 
-const { filteredAttractions, initializeAttractions, searchAttractions } = useAttractions()
+const { filteredAttractions, allAttractions, initializeAttractions, searchAttractions } = useAttractions()
 const items = filteredAttractions
 const selectedLocation = ref<{ lat: number; lng: number } | null>(null)
 const query = ref('')
 const selectedCategory = ref('')
 
-// 고정 6개 카테고리 (id는 contenttypeid 값 — 필요하면 변경 가능)
+// focus from App.vue (provided ref)
+const mapFocusContentId = inject('mapFocusContentId') as Ref<string | null> | undefined
+
+const showReviews = ref(false)
+const currentContentIdForReviews = ref<string | null>(null)
+const currentAttractionTitle = ref<string>('')
+
+function openReviews(attraction: Attraction) {
+  currentContentIdForReviews.value = attraction.contentid
+  currentAttractionTitle.value = attraction.title || ''
+  showReviews.value = true
+}
+
+// 고정 6개 카테고리 (id는 contenttypeid 값)
 const categories = [
   { label: '전체', id: '' },
   { label: '관광지', id: '12' },
@@ -80,6 +100,7 @@ onMounted(() => {
   initializeAttractions()
 })
 
+// When user selects an attraction from list (or programmatically), set marker
 function onSelect(attraction: Attraction, coords?: { lat: number; lng: number }) {
   if (coords && coords.lat && coords.lng) {
     selectedLocation.value = coords
@@ -91,14 +112,36 @@ function onSelect(attraction: Attraction, coords?: { lat: number; lng: number })
   if (lat && lng) selectedLocation.value = { lat, lng }
   else selectedLocation.value = null
 }
+
+// When App.vue sets mapFocusContentId, find attraction and center map on it
+if (mapFocusContentId) {
+  watch(
+    mapFocusContentId,
+    (val) => {
+      if (!val) return
+      // try to find attraction in allAttractions
+      const a = allAttractions.value.find(at => at.contentid === val)
+      if (a) {
+        const lat = parseFloat(String(a.mapy || '')) || 0
+        const lng = parseFloat(String(a.mapx || '')) || 0
+        if (lat && lng) {
+          selectedLocation.value = { lat, lng }
+        }
+      }
+      // reset so next focus works
+      try { mapFocusContentId.value = null } catch {}
+    },
+    { immediate: true }
+  )
+}
 </script>
 
 <style scoped>
-/* Controls (search + category) — sticky so they stay above map/list while scrolling */
+/* (기존 스타일 유지) */
 .controls {
   position: sticky;
   top: 0;
-  z-index: 1100; /* high so it stays above map controls */
+  z-index: 150;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -106,8 +149,6 @@ function onSelect(attraction: Attraction, coords?: { lat: number; lng: number })
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
 }
-
-/* input and category styles */
 .search-input {
   flex: 1;
   padding: 8px 12px;
@@ -115,57 +156,17 @@ function onSelect(attraction: Attraction, coords?: { lat: number; lng: number })
   border-radius: 8px;
   font-size: 14px;
 }
-.categories {
-  display: flex;
-  gap: 8px;
-}
-.cat-btn {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #f7f7fb;
-  cursor: pointer;
-}
-.cat-btn.active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
-}
+.categories { display: flex; gap: 8px; }
+.cat-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; background: #f7f7fb; cursor: pointer; }
+.cat-btn.active { background: #667eea; color: white; border-color: #667eea; }
 
-/* Layout: map 3/4 / list 1/4 */
-.page-wrap {
-  display: flex;
-  height: calc(100vh - 64px); /* adjust if header/control heights differ */
-}
+.page-wrap { display: flex; height: calc(100vh - 64px); }
+.map-area { flex: 3; min-width: 0; position: relative; z-index: 0; }
+.list-area { flex: 1; overflow-y: auto; border-left: 1px solid #e5e7eb; position: relative; z-index: 5; }
 
-/* Map area: ensure it's positioned beneath top UI (low z-index) */
-.map-area {
-  flex: 3; /* 3/4 */
-  min-width: 0;
-  position: relative;
-  z-index: 0;
-}
-
-/* List area: sits above map controls as needed */
-.list-area {
-  flex: 1; /* 1/4 */
-  overflow-y: auto;
-  border-left: 1px solid #e5e7eb;
-  position: relative;
-  z-index: 5;
-}
-
-/* Optional small responsive tweak */
 @media (max-width: 768px) {
-  .page-wrap {
-    flex-direction: column;
-    height: auto;
-  }
-  .map-area {
-    height: 50vh;
-  }
-  .list-area {
-    height: auto;
-  }
+  .page-wrap { flex-direction: column; height: auto; }
+  .map-area { height: 50vh; }
+  .list-area { height: auto; }
 }
 </style>
