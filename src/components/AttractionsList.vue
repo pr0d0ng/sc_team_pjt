@@ -50,14 +50,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  select: [attraction: Attraction]
+  select: [attraction: Attraction, coords?: { lat: number; lng: number }]
 }>()
 
 const { getReviewsByAttraction, getAverageRating } = useReviews()
 const { isBookmarked, toggleBookmark } = useBookmarks()
 
 const selectAttraction = (attraction: Attraction) => {
-  emit('select', attraction)
+  const lat = parseFloat(String(attraction.mapy || '')) || 0
+  const lng = parseFloat(String(attraction.mapx || '')) || 0
+  emit('select', attraction, { lat, lng })
 }
 
 const getReviewCount = (contentid: string) => {
