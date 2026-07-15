@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, defineAsyncComponent } from 'vue'
+import { ref, onMounted, defineAsyncComponent, provide } from 'vue'
 import { useAttractions } from './composables/useAttractions'
 import { useReviews } from './composables/useReviews'
 import { useBookmarks } from './composables/useBookmarks'
@@ -7,7 +7,7 @@ import { useComments } from './composables/useComments'
 import { useFestivals } from './composables/useFestivals'
 import { useMatching } from './composables/useMatching'
 
-// keep existing initialization
+// 초기화
 const { initializeAttractions } = useAttractions()
 const { loadReviews } = useReviews()
 const { loadBookmarks } = useBookmarks()
@@ -24,17 +24,26 @@ onMounted(() => {
   loadMatchingPosts()
 })
 
-// lazy components (fallback to HelloWorld if missing)
+// lazy components
 const Home = defineAsyncComponent(() => import('./components/HelloWorld.vue'))
 const Bookmarks = defineAsyncComponent(() => import('./components/BookmarkPanel.vue'))
 const Profile = defineAsyncComponent(() => import('./components/ProfilePage.vue').catch(() => import('./components/HelloWorld.vue')))
 const Community = defineAsyncComponent(() => import('./components/CommunityPage.vue').catch(() => import('./components/HelloWorld.vue')))
+const PostDetail = defineAsyncComponent(() => import('./components/PostDetailView.vue').catch(() => import('./components/HelloWorld.vue')))
 const Matching = defineAsyncComponent(() => import('./components/MatchingPage.vue').catch(() => import('./components/HelloWorld.vue')))
 const MapPage = defineAsyncComponent(() => import('./components/MapPage.vue').catch(() => import('./components/HelloWorld.vue')))
 const FestivalCalendar = defineAsyncComponent(() => import('./components/FestivalCalendar.vue').catch(() => import('./components/HelloWorld.vue')))
 
-type PageType = 'home'|'bookmarks'|'profile'|'community'|'matching'|'map'|'calendar'
+type PageType = 'home'|'bookmarks'|'profile'|'community'|'postDetail'|'matching'|'map'|'calendar'
 const currentPage = ref<PageType>('home')
+const selectedPostId = ref<string | null>(null)
+
+// Map 포커스용 상태 및 함수 (단일 정의)
+const mapFocusContentId = ref<string | null>(null)
+const focusAttraction = (contentid: string) => {
+  mapFocusContentId.value = contentid
+  go('map')
+}
 
 const currentComponent = () => {
   switch (currentPage.value) {
@@ -42,6 +51,7 @@ const currentComponent = () => {
     case 'bookmarks': return Bookmarks
     case 'profile': return Profile
     case 'community': return Community
+    case 'postDetail': return PostDetail
     case 'matching': return Matching
     case 'map': return MapPage
     case 'calendar': return FestivalCalendar
@@ -52,6 +62,34 @@ const currentComponent = () => {
 const go = (page: PageType) => {
   currentPage.value = page
 }
+// App.vue 쪽: provide('communityOpenParams', communityOpenParams)
+const communityOpenParams = ref<{ board?: 'free'|'attraction'; openForm?: boolean; postId?: string } | null>(null)
+const openCommunity = (params: { board?: 'free'|'attraction'; openForm?: boolean; postId?: string } = {}) => {
+  communityOpenParams.value = params
+  go('community')
+}
+provide('communityOpenParams', communityOpenParams)
+provide('openCommunity', openCommunity)
+
+// 게시물 상세 페이지로 이동
+const viewPost = (postId: string) => {
+  selectedPostId.value = postId
+  currentPage.value = 'postDetail'
+}
+
+// 게시물 목록으로 돌아가기
+const backToCommunity = () => {
+  selectedPostId.value = null
+  currentPage.value = 'community'
+}
+
+// provide로 함수/상태 제공
+provide('go', go)
+provide('viewPost', viewPost)
+provide('backToCommunity', backToCommunity)
+provide('selectedPostId', selectedPostId)
+provide('mapFocusContentId', mapFocusContentId)
+provide('focusAttraction', focusAttraction)
 </script>
 
 <template>
@@ -80,7 +118,6 @@ const go = (page: PageType) => {
 </template>
 
 <style>
-/* reuse your existing styles — simplified for clarity */
 .navbar {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
