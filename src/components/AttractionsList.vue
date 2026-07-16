@@ -19,7 +19,8 @@
         @click="selectAttraction(attraction)"
       >
         <div class="card-image">
-          <img :src="attraction.firstimage || '/placeholder.png'" :alt="attraction.title" />
+          <img v-if="attraction.firstimage" :src="attraction.firstimage" :alt="attraction.title" />
+          <div v-else class="no-image-placeholder">이미지 없음</div>
           <button
             @click.stop="toggleBookmark(attraction)"
             :class="['bookmark-btn', { bookmarked: isBookmarked(attraction.contentid) }]"
@@ -134,6 +135,17 @@ const getReviewCount = (contentid: string) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 14px;
 }
 
 .bookmark-btn {
