@@ -20,10 +20,8 @@
         @click="selectBookmark(bookmark)"
       >
         <div class="bookmark-image">
-          <img
-            :src="bookmark.attractionData.firstimage || '/placeholder.png'"
-            :alt="bookmark.title"
-          />
+          <img v-if="bookmark.attractionData.firstimage" :src="bookmark.attractionData.firstimage" :alt="bookmark.title" />
+          <div v-else class="no-image-placeholder">이미지 없음</div>
         </div>
         <div class="bookmark-info">
           <h3>{{ bookmark.title }}</h3>
@@ -153,6 +151,17 @@ const selectBookmark = (bookmark: Bookmark) => {
 
 .bookmark-item:hover .bookmark-image img {
   transform: scale(1.05);
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 14px;
 }
 
 .bookmark-info {

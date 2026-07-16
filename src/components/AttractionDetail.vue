@@ -3,8 +3,9 @@
     <button @click="goBack" class="back-btn">← 뒤로가기</button>
 
     <div class="detail-header">
-      <div class="header-image">
-        <img :src="attraction.firstimage || '/placeholder.png'" :alt="attraction.title" />
+        <div class="header-image">
+        <img v-if="attraction.firstimage" :src="attraction.firstimage" :alt="attraction.title" />
+        <div v-else class="no-image-placeholder">이미지 없음</div>
       </div>
 
       <div class="header-info">
@@ -154,6 +155,17 @@ const shareLocation = () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 14px;
 }
 
 .header-info h1 {

@@ -1,0 +1,1 @@
+{"model":"gpt-5-mini","messages":[{"role":"user","content":"테스트 응답을 한 문장으로만 해줘."}],"max_completion_tokens":60}
