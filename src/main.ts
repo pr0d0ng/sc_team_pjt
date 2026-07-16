@@ -3,6 +3,17 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 
+import L from 'leaflet'
+import iconUrl from 'leaflet/dist/images/marker-icon.png'
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+})
+
 const KAKAO_KEY = (import.meta.env.VITE_KAKAO_KEY as string) || ''
 
 function loadKakao(): Promise<void> {
