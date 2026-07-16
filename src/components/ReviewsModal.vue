@@ -354,7 +354,7 @@ function deleteCurrentReview() {
 .btn-link {
   border: none;
   background: none;
-  color: #667eea;
+  color: var(--primary-color);
   cursor: pointer;
   padding: 0;
   font-weight: 600;
@@ -407,7 +407,7 @@ textarea {
   font-weight: 600;
 }
 .btn-primary {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 .btn-cancel {

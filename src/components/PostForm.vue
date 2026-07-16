@@ -176,7 +176,7 @@ const cancel = () => {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -205,12 +205,12 @@ const cancel = () => {
 }
 
 .btn-submit {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-submit:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 .btn-cancel {

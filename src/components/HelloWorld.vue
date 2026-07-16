@@ -30,7 +30,7 @@ const features = [
     icon: '🧑‍🤝‍🧑',
     title: '여행 매칭',
     description: '같은 취향의 여행자들을 찾아보세요',
-    color: 'from-purple-400 to-indigo-600',
+    color: 'from-blue-300 to-blue-600',
     tab: 'matching'
   },
   {
@@ -68,7 +68,7 @@ const navigateTo = (tab: string) => {
       <div class="mx-auto max-w-4xl text-center">
         <!-- 배경 장식 -->
         <div class="absolute inset-0 -z-10 flex items-center justify-center">
-          <div class="h-96 w-96 rounded-full bg-gradient-to-r from-blue-200/30 to-purple-200/30 blur-3xl"></div>
+          <div class="h-96 w-96 rounded-full bg-gradient-to-r from-blue-200/30 to-blue-200/30 blur-3xl"></div>
         </div>
 
         <!-- 메인 콘텐츠 -->
@@ -89,20 +89,20 @@ const navigateTo = (tab: string) => {
         <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <button
             @click="scrollToFeatures"
-            class="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105"
+            class="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105"
           >
             기능 살펴보기
           </button>
         </div>
 
         <!-- 통계 -->
-        <div class="mt-16 grid grid-cols-3 gap-8 sm:gap-12">
+          <div class="mt-16 grid grid-cols-3 gap-8 sm:gap-12">
           <div>
             <div class="text-4xl font-bold text-blue-600">700+</div>
             <p class="mt-2 text-gray-600">명소</p>
           </div>
           <div>
-            <div class="text-4xl font-bold text-purple-600">1000+</div>
+            <div class="text-4xl font-bold text-blue-600">1000+</div>
             <p class="mt-2 text-gray-600">여행객</p>
           </div>
           <div>
@@ -156,16 +156,16 @@ const navigateTo = (tab: string) => {
     </section>
 
     <!-- CTA Section -->
-    <section class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-20 sm:px-6 lg:px-8">
+    <section class="bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-20 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-2xl text-center text-white">
         <h2 class="mb-4 text-4xl font-bold">지금 바로 시작해보세요!</h2>
         <p class="mb-8 text-xl opacity-90">
           수천 명의 여행객들과 함께 서울의 매력을 나누어보세요.
         </p>
-        <button
-          @click="navigateTo('community')"
-          class="rounded-lg bg-white px-8 py-4 text-lg font-semibold text-purple-600 shadow-lg transition-all hover:shadow-xl hover:scale-105"
-        >
+          <button
+            @click="navigateTo('community')"
+            class="rounded-lg bg-white px-8 py-4 text-lg font-semibold text-blue-600 shadow-lg transition-all hover:shadow-xl hover:scale-105"
+          >
           커뮤니티 시작하기
         </button>
       </div>

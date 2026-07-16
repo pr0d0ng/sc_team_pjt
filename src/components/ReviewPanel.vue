@@ -211,21 +211,21 @@ function confirmDelete() {
 <style scoped>
 .review-panel { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; background: #fff; }
 .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.btn-toggle { background:transparent; border:none; color:#667eea; cursor:pointer; font-weight:600; }
+.btn-toggle { background:transparent; border:none; color:var(--primary-color); cursor:pointer; font-weight:600; }
 .reviews-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
 .review-item { border:1px solid #f1f5f9; border-radius:8px; padding:10px; background:#fcfcfd; }
 .meta { font-size:13px; color:#6b7280; display:flex; gap:8px; align-items:center; }
 .title { font-weight:700; margin-top:6px; color:#111827; }
 .content { color:#4b5563; margin-top:6px; white-space:pre-wrap; }
 .actions { margin-top:8px; display:flex; gap:8px; }
-.btn-link { border:none; background:none; color:#667eea; cursor:pointer; padding:0; font-weight:600; }
+.btn-link { border:none; background:none; color:var(--primary-color); cursor:pointer; padding:0; font-weight:600; }
 .btn-link.danger { color:#e74c3c; }
 .write-section { margin-top:12px; }
 .star-picker { display:flex; gap:6px; margin:8px 0; }
 .star-btn { border:none; background:transparent; font-size:20px; cursor:pointer; color:#d1d5db; padding:0; }
 .star-btn.active { color:#f59e0b; }
 .modal-actions { display:flex; gap:8px; margin-top:8px; }
-.btn-primary { background:#667eea; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.btn-primary { background:var(--primary-color); color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 .btn-cancel { background:#f3f4f6; color:#374151; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 .btn-danger { background:#e74c3c; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 .confirm-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:3000; }

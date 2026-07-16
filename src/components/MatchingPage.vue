@@ -329,7 +329,7 @@ const deletPost = (postId: string) => {
 
 .write-btn {
   padding: 12px 24px;
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 6px;
@@ -339,7 +339,7 @@ const deletPost = (postId: string) => {
 }
 
 .write-btn:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 .seoul-map {
@@ -363,14 +363,14 @@ const deletPost = (postId: string) => {
 }
 
 .gu-card:hover {
-  border-color: #667eea;
+  border-color: var(--primary-color);
   background: #f9f9f9;
 }
 
 .gu-card.active {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .gu-name {
@@ -423,7 +423,7 @@ const deletPost = (postId: string) => {
 }
 
 .matching-card:hover {
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
   transform: translateY(-5px);
 }
@@ -495,7 +495,7 @@ const deletPost = (postId: string) => {
 
 .tag {
   background: #f0f8ff;
-  color: #667eea;
+  color: var(--primary-color);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
@@ -656,7 +656,7 @@ form {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -683,12 +683,12 @@ form {
 }
 
 .btn-submit {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-submit:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 .btn-cancel {

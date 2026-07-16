@@ -121,7 +121,7 @@ const getReviewCount = (contentid: string) => {
 .attraction-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 .card-image {
@@ -214,7 +214,7 @@ const getReviewCount = (contentid: string) => {
 .view-btn {
   width: 100%;
   padding: 10px;
-  background: #667eea;
+  background: var(--primary-color);
   color: #ffffff;
   position: relative;
   z-index: 20;
@@ -229,7 +229,7 @@ const getReviewCount = (contentid: string) => {
 }
 
 .view-btn:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 @media (max-width: 768px) {
