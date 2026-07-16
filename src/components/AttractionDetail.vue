@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import type { Attraction } from '../types/tourism'
 import { useReviews } from '../composables/useReviews'
 import { useBookmarks } from '../composables/useBookmarks'
@@ -113,29 +113,6 @@ const shareLocation = () => {
   }
 }
 
-// Kakao Maps 초기화 (실제 사용 시)
-onMounted(() => {
-  if (props.attraction && (window as any).kakao) {
-    const mapContainer = document.getElementById('map')
-    if (mapContainer) {
-      const map = new (window as any).kakao.maps.Map(mapContainer, {
-        center: new (window as any).kakao.maps.LatLng(
-          parseFloat(props.attraction.mapy),
-          parseFloat(props.attraction.mapx)
-        ),
-        level: 3
-      })
-
-      const marker = new (window as any).kakao.maps.Marker({
-        position: new (window as any).kakao.maps.LatLng(
-          parseFloat(props.attraction.mapy),
-          parseFloat(props.attraction.mapx)
-        ),
-        map: map
-      })
-    }
-  }
-})
 </script>
 
 <style scoped>

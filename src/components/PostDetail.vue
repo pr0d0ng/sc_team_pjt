@@ -104,7 +104,7 @@ const emit = defineEmits<{
   delete: [postId: string, password: string]
 }>()
 
-const { incrementViews, likePost: likePostFn, addComment, deleteComment, likeComment: likeCommentFn } = usePosts()
+const { incrementViews, likePost: likePostFn, addComment, deleteComment } = usePosts()
 
 const showDeleteForm = ref(false)
 const deletePassword = ref('')
@@ -183,7 +183,7 @@ const confirmDelete = () => {
 }
 
 const likeComment = (commentId: string) => {
-  likeCommentFn(commentId)
+  likeComment(commentId)
 }
 
 const formatDate = (date: string) => {

@@ -96,7 +96,7 @@ import { useReviews } from '../composables/useReviews'
 import { useUserProfile } from '../composables/useUserProfile'
 import type { Review } from '../types/tourism'
 
-const props = defineProps<{ contentid: string; title?: string }>()
+const props = defineProps<{ contentid: string | null; title?: string }>()
 const contentid = computed(() => props.contentid)
 
 const { reviews: allReviews, loadReviews, addReview, updateReview, deleteReview } = useReviews()
@@ -145,15 +145,17 @@ function submitReview() {
     return
   }
 
-  addReview(
-    contentid.value,
-    userId,
-    name,
-    rating.value,
-    title.value.trim(),
-    content.value.trim(),
-    props.title || '' // <-- 추가 (빈 문자열이면 useReviews가 자동 채움 시도)
-  )
+  if (contentid.value) {
+    addReview(
+      contentid.value,  // 이제 string만 가능
+      userId,
+      name,
+      rating.value,
+      title.value.trim(),
+      content.value.trim(),
+      props.title || ''
+    )
+  }
   title.value = ''
   content.value = ''
   rating.value = 5

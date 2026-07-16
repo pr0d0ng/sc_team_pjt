@@ -6,7 +6,7 @@ import App from './App.vue'
 const KAKAO_KEY = (import.meta.env.VITE_KAKAO_KEY as string) || ''
 
 function loadKakao(): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!KAKAO_KEY) {
       console.warn('VITE_KAKAO_KEY not set — Kakao Maps will not be loaded.')
       return resolve()

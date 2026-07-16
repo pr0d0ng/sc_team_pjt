@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import type { SearchFilter } from '../types/tourism'
 import { useAttractions } from '../composables/useAttractions'
 

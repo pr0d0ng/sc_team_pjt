@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import type { Bookmark, Attraction } from '../types/tourism'
 
 const bookmarks = ref<Bookmark[]>([])

@@ -69,7 +69,7 @@ const selectBoard = (boardId: 'free' | 'attraction') => {
 }
 
 // 외부에서 커뮤니티 열기 파라미터(선택적)
-const communityOpenParams = inject<{ value: any }>('communityOpenParams', null)
+const communityOpenParams = inject<{ value: any } | null>('communityOpenParams', null)
 watch(() => communityOpenParams?.value, (val) => {
   if (!val) return
   selectedBoard.value = val.board || 'free'

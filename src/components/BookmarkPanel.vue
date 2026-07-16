@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useBookmarks } from '../composables/useBookmarks'
 import type { Bookmark } from '../types/tourism'
 

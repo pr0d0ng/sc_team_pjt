@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { inject } from 'vue'
 
 // App.vue에서 주입된 go 함수 받기
 const go = inject<(page: string) => void>('go', () => {})
