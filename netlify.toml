@@ -3,3 +3,8 @@
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
+
+# Recommended environment variables (set these in Netlify UI -> Site settings -> Build & deploy -> Environment)
+#[build.environment]
+#  OPENAI_API_KEY = "<your_openai_api_key>"  # server-side secret for functions
+#  OPENAI_MODEL = "gpt-5-mini"

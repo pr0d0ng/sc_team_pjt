@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { getAssistantReply } from '../composables/useChatbot'
 
 type MessageRole = 'user' | 'assistant'
 type Message = { role: MessageRole; content: string }
@@ -16,11 +17,7 @@ const isOpen = ref(false)
 const isMobile = ref(false)
 const chatBody = ref<HTMLElement | null>(null)
 
-const chatEndpoint =
-  (import.meta.env.VITE_CHAT_API_URL as string | undefined) || '/.netlify/functions/chat'
-
-const defaultModel =
-  (import.meta.env.VITE_CHAT_MODEL as string | undefined) || 'gpt-5-mini'
+const defaultModel = (import.meta.env.VITE_CHAT_MODEL as string | undefined) || (import.meta.env.VITE_OPENAI_MODEL as string | undefined) || 'gpt-5-mini'
 
 function loadMessages(): Message[] {
   if (typeof window === 'undefined') return initialMessages
@@ -41,7 +38,6 @@ function saveMessages() {
 function handleResize() {
   isMobile.value = window.innerWidth < 768
 }
-
 function scrollToBottom() {
   nextTick(() => {
     if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight
@@ -51,6 +47,12 @@ function scrollToBottom() {
 function toggleChat() {
   isOpen.value = !isOpen.value
   if (isOpen.value) scrollToBottom()
+}
+
+function clearHistory() {
+  messages.value = initialMessages
+  saveMessages()
+  scrollToBottom()
 }
 
 async function sendMessage() {
@@ -67,22 +69,7 @@ async function sendMessage() {
   scrollToBottom()
 
   try {
-    const res = await fetch(chatEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: nextMessages, model: defaultModel })
-    })
-
-    const raw = await res.text().catch(() => '')
-    let data: any = null
-    try { data = raw ? JSON.parse(raw) : null } catch (e) { data = null }
-
-    if (!res.ok) {
-      const errMsg = data?.error || data?.message || raw || `HTTP ${res.status}`
-      throw new Error(errMsg)
-    }
-
-    const reply = (data && (data.reply || data.choices?.[0]?.message?.content)) || raw || '응답이 비어 있습니다.'
+    const reply = await getAssistantReply(nextMessages, defaultModel)
     messages.value = [...nextMessages, { role: 'assistant', content: reply }]
   } catch (error) {
     messages.value = [
@@ -119,7 +106,10 @@ onBeforeUnmount(() => {
     <section v-if="isOpen" class="chat-panel" :class="{ 'is-mobile': isMobile }">
       <header class="chat-header">
         <div><p class="eyebrow">Netlify Functions</p><h3>AI 상담 챗봇</h3></div>
-        <button class="ghost-button" type="button" @click="toggleChat">닫기</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="ghost-button" type="button" @click="clearHistory">초기화</button>
+          <button class="ghost-button" type="button" @click="toggleChat">닫기</button>
+        </div>
       </header>
 
       <div ref="chatBody" class="chat-body">

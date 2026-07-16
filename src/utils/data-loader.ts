@@ -7,7 +7,8 @@ const ATTRACTION_FILES = [
   '/attractions/서울_문화시설.json',
   '/attractions/서울_쇼핑.json',
   '/attractions/서울_숙박.json',
-  '/attractions/서울_여행코스.json'
+  '/attractions/서울_여행코스.json',
+  '/attractions/서울_축제공연행사.json'
 ]
 
 // 캐시 저장
