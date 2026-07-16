@@ -95,7 +95,19 @@ const loadCurrentUserId = () => {
 
 const isMyReview = (review: any) => {
   const myId = currentUser.value?.id || currentUserId.value
-  return review.userId === myId
+  if (!myId) return false
+  if (review.userId === myId) return true
+  // match by current user's name if present
+  if (currentUser.value?.name && review.userName && currentUser.value.name === review.userName) return true
+  // normalize numeric suffix (allow 'anon-123' and 'review-user-123' to match)
+  const extractSuffix = (id?: string | null) => {
+    if (!id) return null
+    const m = id.match(/(\d+)$/)
+    return m ? m[0] : id
+  }
+  const s = extractSuffix(myId)
+  const u = extractSuffix(review.userId)
+  return s && u ? s === u : false
 }
 
 const editingReviewId = ref<string | null>(null)

@@ -99,6 +99,8 @@ import type { Review } from '../types/tourism'
 const props = defineProps<{ contentid: string | null; title?: string }>()
 const contentid = computed(() => props.contentid)
 
+const emit = defineEmits(['close'])
+
 const { reviews: allReviews, loadReviews, addReview, updateReview, deleteReview } = useReviews()
 const { currentUser, loadUserProfile } = useUserProfile()
 
@@ -139,15 +141,16 @@ function formatDate(d: string) {
 
 function submitReview() {
   const name = author.value.trim() || (currentUser.value?.name || '익명')
-  const userId = currentUser.value?.id || `anon-${Date.now()}`
   if (!title.value.trim() || !content.value.trim()) {
     alert('제목과 내용을 입력하세요.')
     return
   }
 
+  // ensure a persistent reviewer id (matches ReviewPanel behavior)
+  const userId = getOrCreateReviewUserIdFromProfile()
   if (contentid.value) {
     addReview(
-      contentid.value,  // 이제 string만 가능
+      contentid.value,
       userId,
       name,
       rating.value,
@@ -163,8 +166,33 @@ function submitReview() {
 }
 
 function isOwner(r: Review) {
-  if (!currentUser.value) return false
-  return r.userId === currentUser.value.id
+  if (currentUser.value?.id) return r.userId === currentUser.value.id
+  // if user's name matches review author name, consider it owned
+  if (currentUser.value?.name && r.userName && currentUser.value.name === r.userName) return true
+  const saved = localStorage.getItem('review-user-id')
+  if (!saved) return false
+  if (r.userId === saved) return true
+  const extractSuffix = (id?: string | null) => {
+    if (!id) return null
+    const m = id.match(/(\d+)$/)
+    return m ? m[0] : id
+  }
+  const s = extractSuffix(saved)
+  const u = extractSuffix(r.userId)
+  return s && u ? s === u : false
+}
+
+function getOrCreateReviewUserIdFromProfile() {
+  if (currentUser.value?.id) {
+    localStorage.setItem('review-user-id', currentUser.value.id)
+    return currentUser.value.id
+  }
+  const key = 'review-user-id'
+  const saved = localStorage.getItem(key)
+  if (saved) return saved
+  const gen = `review-user-${Date.now()}`
+  localStorage.setItem(key, gen)
+  return gen
 }
 
 function startEdit(r: Review) {
@@ -208,6 +236,8 @@ function deleteCurrentReview() {
   deleteReview(deleteTargetId.value)
   cancelDelete()
 }
+
+
 </script>
 
 <style scoped>
