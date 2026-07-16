@@ -150,9 +150,10 @@ export async function getAssistantReply(messages: { role: string; content: strin
       }
       return data?.reply || ''
     } catch (e) {
-      console.error('Server chat endpoint failed:', e && (e.message || e))
+      const errMsg = e instanceof Error ? e.message : String(e)
+      console.error('Server chat endpoint failed:', errMsg)
       // Do NOT fallback to client-side OpenAI in production — return an informative message
-      return `서버와의 통신에 문제가 발생했습니다: ${e instanceof Error ? e.message : '알 수 없는 오류'}`
+      return `서버와의 통신에 문제가 발생했습니다: ${errMsg || '알 수 없는 오류'}`
     }
   }
 
