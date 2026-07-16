@@ -107,8 +107,8 @@ const truncateContent = (content: string, length: number) => {
 }
 
 .post-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -144,7 +144,7 @@ const truncateContent = (content: string, length: number) => {
 .location-tag {
   display: inline-block;
   background: #f0f8ff;
-  color: #667eea;
+  color: var(--primary-color);
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -161,7 +161,7 @@ const truncateContent = (content: string, length: number) => {
 }
 
 .author {
-  color: #667eea;
+  color: var(--primary-color);
   font-weight: 600;
   font-size: 14px;
 }

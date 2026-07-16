@@ -182,7 +182,7 @@ const formatDate = (date: string) => {
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
     <div class="mx-auto max-w-4xl">
-      <div class="mb-8 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white shadow-lg">
+      <div class="mb-8 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 p-8 text-white shadow-lg">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="text-6xl">👤</div>

@@ -228,7 +228,7 @@ watch(
 }
 .categories { display: flex; gap: 8px; }
 .cat-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; background: #f7f7fb; cursor: pointer; }
-.cat-btn.active { background: #667eea; color: white; border-color: #667eea; }
+.cat-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
 .page-wrap { display: flex; height: calc(100vh - 64px); }
 .map-area { flex: 3; min-width: 0; position: relative; z-index: 0; }

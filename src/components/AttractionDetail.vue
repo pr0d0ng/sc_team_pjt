@@ -200,9 +200,9 @@ const shareLocation = () => {
 
 .btn {
   padding: 12px 20px;
-  border: 2px solid #667eea;
+  border: 2px solid var(--primary-color);
   background: white;
-  color: #667eea;
+  color: var(--primary-color);
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -210,7 +210,7 @@ const shareLocation = () => {
 }
 
 .btn:hover {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
@@ -233,7 +233,7 @@ const shareLocation = () => {
 
 .info-item strong {
   display: block;
-  color: #667eea;
+  color: var(--primary-color);
   margin-bottom: 5px;
 }
 

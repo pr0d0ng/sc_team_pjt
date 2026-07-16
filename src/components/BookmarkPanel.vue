@@ -74,7 +74,7 @@ const selectBookmark = (bookmark: Bookmark) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--primary-color);
   padding-bottom: 15px;
 }
 
@@ -130,8 +130,8 @@ const selectBookmark = (bookmark: Bookmark) => {
 }
 
 .bookmark-item:hover {
-  border-color: #667eea;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-3px);
 }
 
@@ -214,12 +214,12 @@ const selectBookmark = (bookmark: Bookmark) => {
 }
 
 .view-btn {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
 .view-btn:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 @media (max-width: 768px) {

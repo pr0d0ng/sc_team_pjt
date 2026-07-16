@@ -134,7 +134,7 @@ provide('focusAttraction', focusAttraction)
   justify-content: space-between;
   gap: 16px;
   padding: 12px 20px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-color);
   color: #fff;
   position: sticky;
   top: 0;
@@ -153,7 +153,7 @@ provide('focusAttraction', focusAttraction)
   transition: all 0.18s;
 }
 .tab:hover { transform: translateY(-1px); background: rgba(255,255,255,0.18); }
-.tab.active { background: #fff; color: #667eea; box-shadow: 0 6px 18px rgba(102,126,234,0.12); }
+.tab.active { background: #fff; color: var(--primary-color); box-shadow: 0 6px 18px rgba(102,126,234,0.12); }
 
 /* Main */
 .main-content {

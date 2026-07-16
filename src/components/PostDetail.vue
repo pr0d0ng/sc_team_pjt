@@ -241,7 +241,7 @@ const formatDate = (date: string) => {
 }
 
 .author {
-  color: #667eea;
+  color: var(--primary-color);
   font-weight: 600;
 }
 
@@ -260,8 +260,8 @@ const formatDate = (date: string) => {
 
 .map-link-btn {
   background: #f0f8ff;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -270,7 +270,7 @@ const formatDate = (date: string) => {
 }
 
 .map-link-btn:hover {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
@@ -353,7 +353,7 @@ textarea {
 
 .submit-btn {
   padding: 10px 16px;
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 6px;
@@ -362,7 +362,7 @@ textarea {
 }
 
 .submit-btn:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 .comments-list {
@@ -375,7 +375,7 @@ textarea {
   padding: 15px;
   background: #f9f9f9;
   border-radius: 6px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid var(--primary-color);
 }
 
 .comment-header {

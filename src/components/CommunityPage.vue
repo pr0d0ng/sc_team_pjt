@@ -153,31 +153,17 @@ const deletePost = (postId: string, password: string) => {
   padding-bottom: 15px;
 }
 
-.tab-btn {
-  padding: 10px 20px;
-  background: none;
-  border: none;
-  color: #666;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -15px;
-}
-
 .tab-btn.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
 }
-
 .tab-btn:hover {
-  color: #667eea;
+  color: var(--primary-color);
 }
-
 .write-btn {
   margin-left: auto;
   padding: 10px 20px;
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 6px;
@@ -187,7 +173,7 @@ const deletePost = (postId: string, password: string) => {
 }
 
 .write-btn:hover {
-  background: #764ba2;
+  background: var(--secondary-color);
 }
 
 @media (max-width: 768px) {
