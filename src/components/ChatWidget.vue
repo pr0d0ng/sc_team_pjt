@@ -130,12 +130,12 @@ onBeforeUnmount(() => {
 <style scoped>
 /* 기존 스타일 유지 (생략 가능) */
 .chat-widget { position: fixed; right: 20px; bottom: 20px; z-index: 50; }
-.chat-toggle { border:0; border-radius:999px; background:var(--primary-color); color:#fff; padding:12px 16px; display:flex; gap:8px; font-weight:700; cursor:pointer; box-shadow:var(--shadow-lg); }
+.chat-toggle { border:0; border-radius:999px; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; padding:12px 16px; display:flex; gap:8px; font-weight:700; cursor:pointer; box-shadow:0 12px 30px rgba(79,70,229,0.28); }
 .chat-panel { width:min(420px,calc(100vw - 32px)); margin-top:12px; border-radius:20px; background:#fff; box-shadow:0 20px 50px rgba(15,23,42,0.18); overflow:hidden; border:1px solid #e2e8f0; }
 .chat-header { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:#eef2ff; }
-.chat-body { padding:14px; display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto; background:var(--light-color); }
+.chat-body { padding:14px; display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto; background:linear-gradient(180deg,#f8fafc 0%,#fff 100%); }
 .bubble { max-width:85%; padding:10px 12px; border-radius:14px; line-height:1.5; font-size:0.95rem; white-space:pre-wrap; }
-.bubble.user { margin-left:auto; background:var(--primary-color); color:#fff; }
+.bubble.user { margin-left:auto; background:#4f46e5; color:#fff; }
 .bubble.assistant { background:#f3f4f6; color:#111827; }
 .chat-form { display:flex; gap:8px; padding:12px; border-top:1px solid #e5e7eb; }
 textarea { flex:1; border:1px solid #d1d5db; border-radius:12px; padding:10px 12px; resize:none; font:inherit; }
